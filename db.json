@@ -1,0 +1,9 @@
+{
+  "games": [],
+  "payments": [],
+  "totals": {
+    "cashapp": 0,
+    "paypal": 0,
+    "chime": 0
+  }
+}
