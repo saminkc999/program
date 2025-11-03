@@ -1,5 +1,27 @@
 {
-  "games": [],
+  "games": [
+    {
+      "id": 1762183240874,
+      "name": "juwa",
+      "coinsSpent": 0,
+      "coinsEarned": 0,
+      "coinsRecharged": 0
+    },
+    {
+      "id": 1762184352312,
+      "name": "orion",
+      "coinsSpent": 0,
+      "coinsEarned": 0,
+      "coinsRecharged": 0
+    },
+    {
+      "id": 1762185248555,
+      "name": "football",
+      "coinsSpent": 0,
+      "coinsEarned": 0,
+      "coinsRecharged": 0
+    }
+  ],
   "payments": [],
   "totals": {
     "cashapp": 0,

@@ -8,7 +8,12 @@ import { nanoid } from "nanoid";
 const app = express();
 
 // ✅ VERY IMPORTANT FOR RENDER
+
 const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server running on 0.0.0.0:${PORT}`);
+});
 
 app.use(cors());
 app.use(express.json());

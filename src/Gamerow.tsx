@@ -51,8 +51,8 @@ export const GameHeaderRow: FC = () => (
     <div className="col-span-2">Spent</div>
     <div className="col-span-2">Earned</div>
     <div className="col-span-2">Recharged</div>
-    <div className="col-span-1">Net Flow</div>
-    <div className="col-span-2 text-right">P&L / Actions</div>
+    <div className="col-span-1">Total Coin</div>
+    <div className="col-span-2 text-right">P&amp;L / Actions</div>
   </div>
 );
 
@@ -80,9 +80,9 @@ const GameRow: FC<GameRowProps> = ({
 
   // Derived metrics for display row
   const totalInflow = game.coinsEarned + game.coinsRecharged;
-  const netCoinFlow = game.coinsSpent - totalInflow;
+  const netCoinFlow = totalInflow - game.coinsSpent; // <-- main fix
   const pnl = netCoinFlow * coinValue;
-  const isProfit = pnl >= 0;
+  const isProfit = netCoinFlow >= 0;
 
   const pnlClass = isProfit
     ? "text-emerald-600 bg-emerald-100"
@@ -249,6 +249,13 @@ const GameRow: FC<GameRowProps> = ({
   // ============================
   // DISPLAY MODE — TABLE ROW
   // ============================
+  const netCoinClass =
+    netCoinFlow > 0
+      ? "text-green-700"
+      : netCoinFlow < 0
+      ? "text-red-700"
+      : "text-gray-500";
+
   return (
     <div className="grid grid-cols-12 gap-4 py-4 px-4 hover:bg-gray-50 transition duration-150 border-b border-gray-200">
       <div className="col-span-3 flex items-center space-x-3">
@@ -283,20 +290,10 @@ const GameRow: FC<GameRowProps> = ({
         </div>
       </div>
 
+      {/* Total Coin (net coin flow) */}
       <div className="col-span-1 text-sm">
-        <span
-          className={`font-mono ${
-           game.coinsRecharged  - (game.coinsEarned + game.coinsSpent ) > 0
-              ? "text-green-700"
-              :game.coinsRecharged - (game.coinsEarned +  game.coinsSpent  ) < 0
-              ? "text-red-700"
-              : "text-gray-500"
-          }`}
-        >
-          {(
-            game.coinsSpent -
-            ( game.coinsRecharged + game.coinsEarned )
-          ).toLocaleString()}
+        <span className={`font-mono ${netCoinClass}`}>
+          {netCoinFlow.toLocaleString()}
         </span>
       </div>
 
@@ -305,10 +302,7 @@ const GameRow: FC<GameRowProps> = ({
           className={`px-2 py-1 rounded-full text-xs font-bold flex items-center ${pnlClass} w-24 justify-center`}
         >
           <PnlIcon size={14} className="mr-1" />
-          {formatCurrency(
-            (game.coinsSpent - (game.coinsEarned + game.coinsRecharged)) *
-              coinValue
-          )}
+          {formatCurrency(pnl)}
         </span>
         <button
           onClick={() => onEditStart(game.id)}

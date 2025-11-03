@@ -17,7 +17,7 @@ interface Game {
 
 const GAMES_API = "http://localhost:5000/games";
 const PAY_API = "http://localhost:5000"; // /totals, /payments, /reset
-const COIN_VALUE = 0.05;
+const COIN_VALUE = 0.15;
 
 const App: FC = () => {
   const [games, setGames] = useState<Game[]>([]);
@@ -44,7 +44,6 @@ const App: FC = () => {
       const { data } = await axios.get<Game[]>(GAMES_API);
       setGames(data);
 
-      // Keep current selection if still present; else prefer "football"; else first
       setSelectedGameId((prev) => {
         if (prev && data.some((g) => g.id === prev)) return prev;
         const football = data.find(
@@ -80,9 +79,9 @@ const App: FC = () => {
 
     const { coinsEarned, coinsSpent, coinsRecharged } = selectedGame;
 
-    const revenueUSD = coinsRecharged * COIN_VALUE;
     const totalCoinsTransacted = coinsEarned + coinsSpent + coinsRecharged;
     const netCoins = coinsEarned + coinsRecharged - coinsSpent;
+    const revenueUSD = (totalCoinsTransacted - netCoins) * COIN_VALUE;
     const netUSD = netCoins * COIN_VALUE;
 
     return { revenueUSD, totalCoinsTransacted, netUSD };
