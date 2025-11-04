@@ -45,22 +45,34 @@ const App: FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchGames = async () => {
-    try {
-      const { data } = await axios.get<Game[]>(GAMES_API);
-      setGames(data);
+ const fetchGames = async () => {
+  try {
+    const { data } = await axios.get(GAMES_API);
 
-      setSelectedGameId((prev) => {
-        if (prev && data.some((g) => g.id === prev)) return prev;
-        const football = data.find(
-          (g) => g.name?.trim().toLowerCase() === "football"
-        );
-        return football?.id ?? data[0]?.id ?? null;
-      });
-    } catch (error) {
-      console.error("Failed to fetch games:", error);
+    // Make sure we actually got an array from the API
+    if (!Array.isArray(data)) {
+      console.error("❌ Expected an array of games, got:", data);
+      setGames([]);
+      setSelectedGameId(null);
+      return;
     }
-  };
+
+    setGames(data);
+
+    // Preserve selected game if it still exists; otherwise select the first one
+    setSelectedGameId((prev) => {
+      if (prev && data.some((g) => g.id === prev)) {
+        return prev;
+      }
+      return data.length > 0 ? data[0].id : null;
+    });
+  } catch (error) {
+    console.error("Failed to fetch games:", error);
+    setGames([]);
+    setSelectedGameId(null);
+  }
+};
+
 
   const fetchTotals = async () => {
     try {
