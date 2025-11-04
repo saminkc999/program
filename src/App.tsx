@@ -16,10 +16,10 @@ interface Game {
 }
 
 // 🔗 Single backend base URL
-// In Netlify, set VITE_API_BASE_URL = "https://your-service-name.onrender.com"
-// Locally, it will fall back to http://localhost:5000
+// For Netlify Functions, default to "/.netlify/functions/server"
+// You can override with VITE_API_BASE_URL if needed.
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+  import.meta.env.VITE_API_BASE_URL || "/.netlify/functions/server";
 
 const GAMES_API = `${API_BASE_URL}/games`;
 const COIN_VALUE = 0.15;
@@ -42,6 +42,7 @@ const App: FC = () => {
   useEffect(() => {
     fetchGames();
     fetchTotals();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchGames = async () => {
