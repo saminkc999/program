@@ -22,10 +22,32 @@
       "coinsRecharged": 0
     }
   ],
-  "payments": [],
+  "payments": [
+    {
+      "id": "_Q3vKy1GByskXjlY-yQ7A",
+      "amount": 90,
+      "method": "cashapp",
+      "note": null,
+      "createdAt": "2025-11-03T17:03:19.836Z"
+    },
+    {
+      "id": "qcxdu04RCPAuM39FEMA_8",
+      "amount": 80,
+      "method": "cashapp",
+      "note": null,
+      "createdAt": "2025-11-03T17:03:23.662Z"
+    },
+    {
+      "id": "rq1xrWyUFjc-X3TStzDZh",
+      "amount": 80,
+      "method": "chime",
+      "note": null,
+      "createdAt": "2025-11-03T17:03:29.393Z"
+    }
+  ],
   "totals": {
-    "cashapp": 0,
+    "cashapp": 170,
     "paypal": 0,
-    "chime": 0
+    "chime": 80
   }
 }

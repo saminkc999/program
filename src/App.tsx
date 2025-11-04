@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from "react";
+import React, { type FC, useEffect, useMemo, useState } from "react";
 import { DollarSign, Coins, TrendingUp } from "lucide-react";
 import StatCard from "./Statacard";
 import GameRow, { GameHeaderRow } from "./Gamerow"; // header row
@@ -15,8 +15,13 @@ interface Game {
   lastRechargeDate?: string;
 }
 
-const GAMES_API = "http://localhost:5000/games";
-const PAY_API = "http://localhost:5000"; // /totals, /payments, /reset
+// 🔗 Single backend base URL
+// In Netlify, set VITE_API_BASE_URL = "https://your-service-name.onrender.com"
+// Locally, it will fall back to http://localhost:5000
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+const GAMES_API = `${API_BASE_URL}/games`;
 const COIN_VALUE = 0.15;
 
 const App: FC = () => {
@@ -58,7 +63,7 @@ const App: FC = () => {
 
   const fetchTotals = async () => {
     try {
-      const { data } = await axios.get(`${PAY_API}/totals`);
+      const { data } = await axios.get(`${API_BASE_URL}/totals`);
       setPaymentTotals(data);
     } catch (e) {
       console.error("Failed to load payment totals:", e);
@@ -138,7 +143,7 @@ const App: FC = () => {
     method: "cashapp" | "paypal" | "chime";
     note?: string;
   }) => {
-    const { data } = await axios.post(`${PAY_API}/payments`, {
+    const { data } = await axios.post(`${API_BASE_URL}/payments`, {
       amount,
       method,
       note,
@@ -147,7 +152,7 @@ const App: FC = () => {
   };
 
   const onReset = async () => {
-    const { data } = await axios.post(`${PAY_API}/reset`);
+    const { data } = await axios.post(`${API_BASE_URL}/reset`);
     setPaymentTotals(data.totals);
     return data.totals; // lets PaymentForm update immediately
   };
