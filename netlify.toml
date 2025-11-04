@@ -1,9 +1,9 @@
 [build]
   command = "npm run build"
-  publish = "dist"
+  publish = "dist"           # or "build" if using CRA, but for Vite it's "dist"
   functions = "netlify/functions"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[dev]
+  command = "vite"            # or "npm run dev"
+  functions = "netlify/functions"
+  port = 8888                 # Netlify Dev default
