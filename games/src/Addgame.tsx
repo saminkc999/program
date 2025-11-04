@@ -22,7 +22,6 @@ const AddGameForm: FC<AddGameFormProps> = ({ apiUrl, onGameAdded }) => {
       });
       setName(""); // Clear input
       onGameAdded(); // Refresh games list in parent
-      console.log("api", apiUrl);
     } catch (error) {
       console.error("Failed to add game:", error);
     }

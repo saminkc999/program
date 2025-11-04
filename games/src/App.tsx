@@ -1,4 +1,4 @@
-import React, { type FC, useEffect, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useState } from "react";
 import { DollarSign, Coins, TrendingUp } from "lucide-react";
 import StatCard from "./Statacard";
 import GameRow, { GameHeaderRow } from "./Gamerow"; // header row
@@ -15,14 +15,9 @@ interface Game {
   lastRechargeDate?: string;
 }
 
-// 🔗 Single backend base URL
-// For Netlify Functions, default to "/.netlify/functions/server"
-// You can override with VITE_API_BASE_URL if needed.
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "/.netlify/functions/server";
-
-const GAMES_API = `${API_BASE_URL}/games`;
-const COIN_VALUE = 0.15;
+const GAMES_API = "http://localhost:5000/games";
+const PAY_API = "http://localhost:5000"; // /totals, /payments, /reset
+const COIN_VALUE = 0.05;
 
 const App: FC = () => {
   const [games, setGames] = useState<Game[]>([]);
@@ -42,41 +37,29 @@ const App: FC = () => {
   useEffect(() => {
     fetchGames();
     fetchTotals();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchGames = async () => {
     try {
-      const { data } = await axios.get(GAMES_API);
-
-      // Make sure we actually got an array from the API
-      if (!Array.isArray(data)) {
-        console.error("❌ Expected an array of games, got:", data);
-        setGames([]);
-        setSelectedGameId(null);
-        return;
-      }
-
+      const { data } = await axios.get<Game[]>(GAMES_API);
       setGames(data);
-  
 
-      // Preserve selected game if it still exists; otherwise select the first one
+      // Keep current selection if still present; else prefer "football"; else first
       setSelectedGameId((prev) => {
-        if (prev && data.some((g) => g.id === prev)) {
-          return prev;
-        }
-        return data.length > 0 ? data[0].id : null;
+        if (prev && data.some((g) => g.id === prev)) return prev;
+        const football = data.find(
+          (g) => g.name?.trim().toLowerCase() === "football"
+        );
+        return football?.id ?? data[0]?.id ?? null;
       });
     } catch (error) {
       console.error("Failed to fetch games:", error);
-      setGames([]);
-      setSelectedGameId(null);
     }
   };
 
   const fetchTotals = async () => {
     try {
-      const { data } = await axios.get(`${API_BASE_URL}/totals`);
+      const { data } = await axios.get(`${PAY_API}/totals`);
       setPaymentTotals(data);
     } catch (e) {
       console.error("Failed to load payment totals:", e);
@@ -97,9 +80,9 @@ const App: FC = () => {
 
     const { coinsEarned, coinsSpent, coinsRecharged } = selectedGame;
 
+    const revenueUSD = coinsRecharged * COIN_VALUE;
     const totalCoinsTransacted = coinsEarned + coinsSpent + coinsRecharged;
     const netCoins = coinsEarned + coinsRecharged - coinsSpent;
-    const revenueUSD = (totalCoinsTransacted - netCoins) * COIN_VALUE;
     const netUSD = netCoins * COIN_VALUE;
 
     return { revenueUSD, totalCoinsTransacted, netUSD };
@@ -156,7 +139,7 @@ const App: FC = () => {
     method: "cashapp" | "paypal" | "chime";
     note?: string;
   }) => {
-    const { data } = await axios.post(`${API_BASE_URL}/payments`, {
+    const { data } = await axios.post(`${PAY_API}/payments`, {
       amount,
       method,
       note,
@@ -165,7 +148,7 @@ const App: FC = () => {
   };
 
   const onReset = async () => {
-    const { data } = await axios.post(`${API_BASE_URL}/reset`);
+    const { data } = await axios.post(`${PAY_API}/reset`);
     setPaymentTotals(data.totals);
     return data.totals; // lets PaymentForm update immediately
   };
