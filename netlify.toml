@@ -1,10 +1,39 @@
+# ==========================
+# Netlify Build Configuration
+# ==========================
+
 [build]
+  # Command to build your Vite (React + TypeScript) app
   command = "npm run build"
+
+  # Folder to publish after build
   publish = "dist"
+
+  # Folder that contains your serverless backend functions
   functions = "netlify/functions"
 
+# ==========================
+# Local Development Settings
+# ==========================
 
 [dev]
-  command = "vite"            # or "npm run dev"
+  # Use Vite's dev server
+  command = "vite"        # or "npm run dev"
+  
+  # Tell Netlify Dev where your serverless functions are
   functions = "netlify/functions"
-  port = 8888                 # Netlify Dev default
+
+  # Default port for combined frontend + backend
+  port = 8888
+
+  # Optional: Automatically open in browser when starting
+  autoLaunch = true
+
+# ==========================
+# Redirects (optional but helpful)
+# Ensures React SPA routing works in production
+# ==========================
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
